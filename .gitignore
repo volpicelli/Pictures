@@ -1,0 +1,7 @@
+*.sock
+.env
+logs/*
+env
+/**/__pycache__/api/**
+**/__pycache__/**/
+**/__pycache__/*.pyc
