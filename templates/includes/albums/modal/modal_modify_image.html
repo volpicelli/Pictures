@@ -1,0 +1,33 @@
+ <!-- Horizontal Form -->
+ <div class="row ">
+  {{image.image.lat}}
+    <div class="col-5">
+      <label for="oldlat" class="form-label">Lat</label>
+      <input type="text" class="form-control" id="oldlat" name="oldlat" readonly value="{{image.lat}}">
+    </div>
+    <div class="col-5">
+      <label for="oldlon" class="form-label">Lon</label>
+
+    <input type="text" class="form-control" id="oldlon" name="oldlon" readonly value="{{image.lon}}">
+    </div>
+ </div>
+
+  <div class="row ">
+    <div class="col-5">
+      <img src="{{image.image.url}}" img-id="{{one.id}}" class="object-fit-contain image2modify " alt="...">
+    </div>
+    <div class="col-7">
+      <div id = "mapmodify" style = "height: 400px"></div>
+      </div>
+    
+  </div>
+  
+  <!-- End Horizontal Form -->
+
+  {% block customjs %}
+  
+  <script>
+    alert("SEI UN POLLO")
+  </script>
+ 
+  {% endblock customjs %}

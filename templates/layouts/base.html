@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+{% block head %}
+  {% include "includes/head_inc.html" %}
+
+{% endblock head %}
+
+{% block customhead %}
+
+{% endblock customhead %}
+</head>
+<body>
+
+  <!-- ======= Header ======= -->
+  {% block header %}
+  {% include "includes/header_inc.html" %}
+  {% endblock header %}
+ 
+  <!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  {% block sidebar %}
+  {% include "includes/sidebar_inc.html" %}
+  {% endblock sidebar %}
+  <!-- End Sidebar-->
+<!--  Start Main-->
+{% block main %}
+  {% include "includes/main_inc.html" %}
+  {% endblock main %}
+ <!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  {% block footer %}
+  {% include "includes/footer_inc.html" %}
+  {% endblock footer %}
+  <!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  
+  
+</body>
+<!-- Vendor JS Files -->
+{% block javascript %}
+  {% include "includes/javascript_inc.html" %}
+  {% endblock javascript %}
+
+  {% block customjs %}
+  {% include "includes/javascript_custom_inc.html" %}
+  {% endblock customjs %}
+</html>

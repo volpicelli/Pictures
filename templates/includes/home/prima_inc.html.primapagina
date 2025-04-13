@@ -1,0 +1,223 @@
+{% load settings_value %}
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>{{this.nome}} ( {{foto|length}} )  </h1>
+    <p class="text-center">{{this.descrizione}}</p>
+    <!--
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Components</li>
+        <li class="breadcrumb-item active">Cards</li>
+      </ol>
+    </nav>
+    -->
+    <div class="row align-right">
+      <div class="col-7">
+         <!-- Full Screen Modal -->
+         <button type="button" class="btn btn-primary" onclick="getAllCheckedCheckbox()">
+          Test
+        </button>
+        <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+          </div>
+        </div>
+        
+        <!-- Create book button 
+        <button id="create-book" class="btn btn-primary" type="button" name="button">Create book</button>
+        -->
+        <div class="modal fade" id="fullscreenModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Full Screen Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">With controls</h5>
+      
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+
+                       
+                      </div>
+      
+                      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
+      
+                    </div>
+                    
+      
+                  </div>
+                </div>
+                    </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+         
+        <!-- End Full Screen Modal-->
+
+      </div>
+      <div class="col-5">
+        <select class="makeaction form-select form-select-sm" aria-label=".form-select-sm example">
+          <option selected>Azione da compiere</option>
+          <option value="1">Cancella tutte le selezionate</option>
+          <option value="2">Assegna  selezionate ad un album esistente</option>
+          <option value="3">Crea nuovo album per selezionate</option>
+          <option value="3">Geolocalizza selezionate</option>
+        </select>
+      </div>
+    </div>
+    
+  </div>
+  <div class="row">
+    <div class="col-12">
+  <div id = "map" style=" height: 480px;" class="d-none mb-5" ></div>
+  </div>
+</div>
+  <!--
+  <iframe width="425" height="350" src="https://www.openstreetmap.org/export/embed.html?bbox=7.723045349121095%2C45.018760374852164%2C7.848272323608398%2C45.06479159126729&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/#map=14/45.0418/7.7857">Visualizza mappa ingrandita</a></small>
+-->
+  <section class="section">
+
+  <div class="container-fluid">
+    {% for item in items %}
+      <div class="row ">
+
+        <div class="col-12 mt-3 mb-3">
+          <input  type="checkbox" class="main-{{item.year}}{{item.month}}" onclick="selectImgs('{{item.year}}{{item.month}}')">   <b> {{item.nomemese}} {{item.year }} </b> ({{item.total}})
+        </div>
+      </div>
+      <div class="row">
+        <!-- foto contiene oggetti della class Image2Album -->
+        {% for one in item.fotos %}
+    
+       
+          <div id="card_{{one.id}}" class="inline col-lg-{{col}} col-md-{{col}} d-none d-lg-block d-md-block">
+        
+            <!-- Card with an image on top -->
+            <div class="card">
+              <div class="card-header">
+                <div class="row ">
+                  <!--
+                  <div class="col-1"></div>
+                  -->
+                  <div class="col-10">
+                    <span style="font-size: 0.8rem; " > {% if one.citta %} {{one.citta}} , {% endif %} {{one.data|date:"d/m/y"}} {{one.ora|date:"H:i"}} </span>
+<!--
+                    <span style="font-size: 0.8rem; " > {{one.data}} {{one.ora|date:"H:i"}} <br> {% if one.citta %} {{one.citta}}  {% endif %}  </span>
+-->
+                  </div>
+                  <div class="col-1">
+                      <input class="form-check-input img_selected {{item.year}}{{item.month}}" style="border-color: #000000;" type="checkbox" value="{{one.id}}" >&nbsp; &nbsp; 
+                  </div>
+                  
+                </div>
+              </div>
+
+              <!--
+            
+              -->
+              <img src="{% get_settings_value 'MEDIA_URL' %}{{ one.foto }}" img-id="{{one.id}}" class="card-img-top object-fit-contain gallery" alt="...">
+
+              <div class="card-body" >
+
+                <!-- 
+                <p class="fst-italic fs-6 "><small>{% if one.image.citta %} {{one.image.citta}} {% endif %}<br>{{one.image.data|date:"d/M/Y H:i"}} </small></p>
+              <p class="card-text"> <strong> </strong></p>-->
+              </div>
+              <div class="card-footer">
+                <div class="icon text-end">
+                  <i class="bi bi-trash" onclick="deleteThis({{one.id}})"></i> &nbsp;
+                  <a href="/albums/modify/{{one.id}}" target="_blank" ><i class="bi bi-pencil"   data-img_id="{{one.id}}" 
+                  data-lat="{{one.lat}}" 
+                  data-lon="{{one.lon}}" 
+                  data-img="{% get_settings_value 'MEDIA_URL' %}{{ one.foto }}"></i>&nbsp; </a>
+                  <a href="#" onclick="showModal(this)" data-img_id="{{one.id}}" data-album_id="{{this.id}}"><i class="bi bi-eye"></i> </a>&nbsp; 
+                  <i class="bi bi-plus-circle" onclick="add2album({{one.id}})"></i>&nbsp; 
+                  <a href="#" ><i class="bi bi-pin-map" onclick="add2map(this,'map')" 
+                    data-lat="{{one.lat}}" 
+                    data-lon="{{one.lon}}" 
+                    data-img="{% get_settings_value 'MEDIA_URL' %}{{ one.foto }}" >
+                  </i></a>
+                  &nbsp; &nbsp; 
+                </div>
+              </div>
+            
+            </div>
+            <!-- End Card with an image on top -->
+          
+          </div>
+    
+          {% endfor %}
+    
+    
+      </div>
+    {% endfor %}
+
+  </div>
+</section>
+    
+
+</main><!-- End #main -->
+
+
+<!-- Full Screen Modal -->
+
+
+<div class="modal fade" id="modifyImage" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modify Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body modal-modify">
+         <!-- Horizontal Form 
+
+         <div class="row ">
+            <div class="col-5">
+              <label for="oldlat" class="form-label">Lat</label>
+              <input type="text" class="form-control" id="oldlat" name="oldlat" readonly>
+            </div>
+            <div class="col-5">
+              <label for="oldlon" class="form-label">Lon</label>
+
+            <input type="text" class="form-control" id="oldlon" name="oldlon" readonly>
+            </div>
+         </div>
+
+          <div class="row ">
+            <div class="col-5">
+              <img src="" img-id="{{one.id}}" class="image2modify " alt="...">
+            </div>
+            <div class="col-7">
+              <div id = "mapmodify" style = "height: 400px"></div>
+              </div>
+            
+          </div>
+          -->
+          <!-- End Horizontal Form -->
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End Full Screen Modal-->
+

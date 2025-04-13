@@ -1,0 +1,37 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock head %}
+{% block customhead %}
+      {% include "includes/albums/show_customhead_inc.html" %}
+  {% endblock customhead %}
+
+{% block header %}
+{{ block.super }}
+{% endblock header %}
+
+{% block sidebar %}
+{{ block.super }}
+{% endblock sidebar %}
+
+
+{% block main %}
+{% include "includes/albums/show_inc.html" %}
+{% endblock main %}
+
+{% block footer %}
+{{ block.super }}
+{% endblock footer %}
+
+{% block javascript %}
+{{ block.super }}
+{% endblock javascript %}
+
+{% block customjs %}
+  {{ block.super }}
+  {% include "includes/albums/show_customjs_inc.html" %}
+ 
+  {% endblock customjs %}
+

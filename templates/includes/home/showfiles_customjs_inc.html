@@ -1,0 +1,371 @@
+
+{% load static %}
+{% load settings_value %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+  <script>
+function setexif(imgid){
+  alert(imgid)
+}
+function hidemap(){
+      //alert("HDE MAP")
+      $('#mapdiv').addClass('d-none');
+    }
+
+  let url_upload2album = "/api/upload/{{this.id}}"; 
+  $('.makeactionfoto').on('change', function() {
+  alert( this.value );
+  if ( this.value == 5) {
+    $('#modalDialogScrollable').modal('show'); 
+    $("#uploadFoto").addClass("dropzone");
+    initDropZ()
+  }
+});
+
+$('.makeactionvideo').on('change', function() {
+  alert( this.value );
+  if ( this.value == 4) {
+    $(".video-title").html(" Carica Video per questo Album")
+    $('#modalDialogScrollable').modal('show'); 
+    $("#uploadFoto").addClass("dropzone");
+    initDropZ()
+  }
+});
+
+let mymap;
+
+  class MyMap {
+    #map;
+  constructor(mapel,latc, lonc, zoom) {
+    this.latc = latc;
+    this.lonc = lonc;
+    this.zoom = zoom;
+    this.mapel = mapel;
+  }
+    
+  create() {
+    // Creating map options
+    var mapOptions = {
+      center: [this.latc, this.lonc],
+      zoom: this.zoom
+    }
+    
+    // Creating a map object
+     this.#map = new L.map(this.mapel, mapOptions);
+   
+   // Creating a Layer object
+   var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+   
+   // Adding layer to the map
+   this.#map.addLayer(layer);
+   
+   return this.#map
+  }
+  addMarker(lat,lon,myIcon) {
+
+    
+    
+   // L.marker([lat, lon],{'icon':myIcon}).addTo(this.#map)
+    L.marker([lat, lon]).addTo(this.#map)
+    .bindPopup('A POLLO pretty CSS popup.<br> Easily customizable.')
+    .openPopup();
+  }
+  setView(lat,lon,zoom){
+    this.#map.setView([lat,lon],zoom)
+  }
+  
+}
+
+
+  </script>
+
+  <script>
+    function getAllCheckedCheckbox(){
+
+      
+    
+    $('input.img_selected:checkbox:checked').each(function () {
+       var sThisVal = (this.checked ? $(this).val() : "");
+       console.log(sThisVal)
+  });
+
+}
+/*
+const modal = document.getElementById('exampleMapModal')
+modal.addEventListener('show.bs.modal', function (event) {
+    
+  // event.preventDefault();
+  //const link = event.relatedTarget.getAttribute('href');
+  lat = event.relatedTarget.getAttribute('lat');
+  lon = event.relatedTarget.getAttribute('lon');
+  const link = "https://www.google.com/maps?q={"+lat+"},{"+lon+"}"
+  
+  const modalData = document.querySelector('.modal-data');
+
+  fetch(link).then(res => res.text()).then(html => {
+    modalData.innerHTML = html; 
+  });
+});
+*/
+    function add2map(el,mapel){
+      //alert("Adjust Map location on this ")
+      lat = $(el).attr('data-lat');
+      lon = $(el).attr('data-lon');
+      img = $(el).attr('data-img');
+      $("#"+mapel).removeClass("d-none");
+      
+      var myIcon = L.icon({
+            iconUrl: img,
+            iconSize: [40, 40],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76]
+            //shadowUrl: 'my-icon-shadow.png',
+            //shadowSize: [68, 95],
+            //shadowAnchor: [22, 94]
+              });
+              
+      if ( typeof mymap != "undefined" ) { 
+        console.log("MAP ESISTE");
+            //mymap.setView(lat,lon,16);
+            
+            
+            mymap.addMarker(lat,lon) //,myIcon);
+
+        //alert("EXIST")
+      } 
+        
+        else { 
+          console.log("UnDEFINED");
+          //alert("Non ESISTE")
+          mymap = new MyMap('map',lat,lon,16);
+          mymap.create();
+          mymap.addMarker(lat,lon,myIcon);
+        }
+      //mymap.addMarker(lat,lon);
+
+    }
+    function adjustLocation(img_id){
+      alert("Adjust Map location on this "+img_id)
+      mymap.addMarker(45.3307658,9.0948794);
+
+    }
+    function add2album(img_id){
+      alert("Add to album this "+img_id)
+    
+    }
+    function createMap(lat,lon,zoom,where){
+
+      //var myIcon = L.icon({
+      //      iconUrl: img,
+      //      iconSize: [40, 40],
+      //      iconAnchor: [22, 94],
+      //      popupAnchor: [-3, -76]
+            //shadowUrl: 'my-icon-shadow.png',
+            //shadowSize: [68, 95],
+            //shadowAnchor: [22, 94]
+      //        });
+              
+      if ( typeof modalmap != "undefined" ) { 
+        console.log("!=UnDEFINED");
+            modalmap.setView(lat,lon,zoom);
+            
+            
+            modalmap.addMarker(lat,lon) //,myIcon);
+
+        //alert("EXIST")
+      } 
+        
+        else { 
+          console.log("UnDEFINED");
+          //alert("Non ESISTE")
+          modalmap = new MyMap(where,lat,lon,zoom);
+          modalmap.create();
+          modalmap.addMarker(lat,lon);
+        }
+        return modalmap;
+    }
+    function modifyThis(el){
+      //alert("Modify this "+$(el).attr('data-img'))
+      /*
+      $("input#oldlat").attr('value',$(el).attr('data-lat'))
+      $("input#oldlon").attr('value',$(el).attr('data-lon'))
+      $("img.image2modify").attr('src',$(el).attr('data-img'))
+      add2map(el,'mapmodify');
+      */
+      $("img.image2modify").attr('src',$(el).attr('data-img'))
+      lat = $(el).attr('data-lat');
+      lon = $(el).attr('data-lon');
+      img_id = $(el).attr('data-img_id');
+      $.ajax({
+              url: "/albums/show_modal_modify/"+img_id,
+              method: "GET",
+              //data: $("#creaalbum").serializeArray()
+            }).done(function( modalhtml ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  console.log("QUI CI SONO");
+                  
+
+                  $(".modal-modify").html(modalhtml);
+                  $('#modifyImage').modal('show');
+                  
+                  modalm = createMap(lat,lon,16,'mapmodify')
+                  $("#modifyImage").on("hidden.bs.modal", function () {
+                      alert("PORCA")
+                      if (modalm != null) {
+                        //modalm.remove();
+                        modalm = null;
+    }
+                    });
+                  
+                  
+                  
+
+                  
+              });
+     
+     
+    }
+    function deleteThis(img_id){
+      //alert("Delete this "+img_id)
+      let text;
+      if (confirm("Cancella !") == true) {
+        text = true;
+      } else {
+        text = false;
+      }
+      if ( text ) {
+      $.ajax({
+              url: "/api/delete/"+img_id,
+              method: "GET",
+              //data: $("#creaalbum").serializeArray()
+            }).done(function( msg ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  $("#card_"+img_id).remove();
+                  console.log(msg);
+                  });
+
+        }
+    }
+     //$(document).ready(function() {
+        function showModal(el){
+          console.log($(el).attr('data-img_id'))
+          img_id=$(el).attr('data-img_id')
+          album_id=$(el).attr('data-album_id')
+          $.ajax({
+              url: "/api/populatemodalcarousel/"+album_id+"/"+img_id,
+              method: "GET",
+              //data: $("#creaalbum").serializeArray()
+            }).done(function( msg ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  console.log("QUI CI SONO");
+                  item0 = '<div class="carousel-item active"><img src="';
+                  item1 = '<div class="carousel-item "><img src="';
+                  item2_0 = '" class="d-block w-100" alt="...">'
+                  caption = '<div class="carousel-caption d-none d-md-block"> <h5 class="bg-transparent ">' 
+                  caption_1 = '</h5><p class="bg-transparent ">'
+                  caption_2 =  '</p></div></div>';
+                  i=0;
+                  $(".carousel-inner").html("")
+                  
+                  msg.forEach(element => {
+                    //$(".carousel-caption").html("");
+                      console.log("{% get_settings_value 'MEDIA_URL' %}",element['path'])
+                      console.log("POLLO",((element['citta']== null ) ? 'xx' : element['citta']) )
+                      data = ((element['data'] == null ) ? 'x' : element['data']);
+                      citta = ((element['citta'] == null ) ? 'x' : element['citta']);
+ 
+                      if ( i == 0){
+                      item= item0+ "{% get_settings_value 'MEDIA_URL' %}/"+element['path']+item2_0 + caption + element['data'] +caption_1 + element['citta']+caption_2;
+                        //((element['data']== null ) ? '' : element['data']) + 
+                        //caption_1 + 
+                        //((element['citta']== null ) ? '' : element['citta']) + 
+                        //caption_2;
+                      } else {
+                        item= item1+ "{% get_settings_value 'MEDIA_URL' %}/"+element['path']+item2_0+ caption +  data +caption_1 + citta + caption_2;
+                        //((element['data']== null ) ? '' : element['data'])+
+                        //caption_1+ 
+                        //((element['citta']== null ) ? '' : element['citta'])+
+                        //caption_2;
+                      }
+                      $(".carousel-inner").append(item)
+
+                      i=+1;
+                      
+                  });
+
+                  
+              });
+              $('#fullscreenModal').modal('show');
+          /*
+          console.log('img[img-id="'+$(el).attr('img-id')+'"]')
+          console.log($('img[img-id="'+$(el).attr('img-id')+'"]').nextAll('img.gallery'))
+          allimg = $('img[img-id="'+$(el).attr('img-id')+'"]').nextAll('img.gallery')
+          //allimg = $(el).sibling('img.gallery');
+          console.log("POLLO",$(el).nextAll('img.gallery'))
+          $(allimg).each(function(){
+            console.log($(this).attr('src'))
+          })
+        $('#fullscreenModal').modal('show');
+        */
+      }
+//})
+
+function initDropZ(){ 
+  alert("POLLO")
+     //Dropzone.autoDiscover = true;
+     Dropzone.options.uploadFoto = { // The camelized version of the ID of the form element
+   
+     // The configuration we've talked about above
+     url: url_upload2album,
+     autoProcessQueue: false,
+     uploadMultiple: true,
+     parallelUploads: 100,
+     maxFiles: 100,
+     acceptedFiles: 'image/*,.mp4,.mkv,.avi,.mov',
+     //acceptedFiles: 'image/*',
+     clickable: true,
+     previewsContainer: '#previewimgs',
+     addRemoveLinks: true,
+     dictDefaultMessage: "Sposta qui i files o clicca per sceglierle" ,
+   
+     // The setting up of the dropzone
+     init: function() {
+       var myDropzone = this;
+   
+       // First change the button to actually tell Dropzone to process the queue.
+       this.element.querySelector("button[type=submit]").addEventListener("click", function(e) {
+         // Make sure that the form isn't actually being sent.
+         e.preventDefault();
+         e.stopPropagation();
+         myDropzone.processQueue();
+       });
+   
+       // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
+       // of the sending event because uploadMultiple is set to true.
+       this.on("sendingmultiple", function() {
+           console.log("SEND");
+         // Gets triggered when the form is actually being sent.
+         // Hide the success button or the complete form.
+       });
+       this.on("successmultiple", function(files, response) {
+         // Gets triggered when the files have successfully been sent.
+         // Redirect user or notify of success.
+       });
+       this.on("errormultiple", function(files, response) {
+            alert("ERROR");
+         // Gets triggered when there was an error sending the files.
+         // Maybe show form again, and notify user of error
+       });
+     }
+    }
+    $("form#uploadFoto").dropzone(Dropzone.options.uploadFoto);
+   }
+
+  </script>
+

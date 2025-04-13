@@ -1,0 +1,90 @@
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Albums Form Layouts</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Forms</li>
+          <li class="breadcrumb-item active">Layouts</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-10">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Crea Nuovo Album</h5>
+
+              <!-- Horizontal Form -->
+              <form id="creaalbum" method="POST" class="" action="/pollo" enctype="multipart/form-data">{% csrf_token %}
+                <div class="row mb-3">
+                  <label for="nome" class="col-sm-2 col-form-label">Nome</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="nome" name="nome">
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <label for="descrizione" class="col-sm-2 col-form-label">Descrizione</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="descrizione" name="descrizione">
+                  </div>
+                </div>
+                
+                
+               
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Crea</button>
+                </div>
+              </form>
+              <!-- End Horizontal Form -->
+
+            </div>
+          </div>
+
+          
+
+        </div>
+      </div>
+
+      <form id="uploadFoto" method="POST" class=" addimg d-none "  enctype="multipart/form-data">{% csrf_token %}
+      <div class="row">
+
+        <div class="col-12 col-md-12 ">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Carica Immagini in questo album</h5>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                         <div id="previewimgs" class="dropzone-previews">
+
+                         </div>
+                         <!--
+                         <input type="file" name="file" multiple />
+                          
+                        File uploader with multiple files upload 
+                        <input type="file" name="fileupload"  multiple>
+                        -->
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+        <div class="col-12 d-flex justify-content-end">
+
+                                    <button type="submit" class="btn btn-primary me-1 mb-1">CARICA</button>
+                                    <!-- 
+                                        <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                    -->
+        </div>
+      </div>
+      </form>
+     
+
+    </section>
+   
+  </main><!-- End #main -->

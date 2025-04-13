@@ -1,0 +1,369 @@
+
+{% load static %}
+{% load settings_value %}
+<script src="https://kit.fontawesome.com/d9239b63bd.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.3/leaflet.js"></script>
+<script src="https://tiles.locationiq.com/v3/libs/leaflet-geocoder/1.9.6/leaflet-geocoder-locationiq.min.js"></script>
+<script type="text/javascript" src="https://tiles.locationiq.com/v3/js/liq-styles-ctrl-leaflet.js?v=0.1.8"></script>
+
+
+  <script>
+
+function registraData(id,regdata){
+  $.ajax({
+           url: "/api/registraData",
+           method: "POST",
+           data: { 'data': regdata,'id':id } 
+         }).done(function( msg ) {
+              alert( "Data Saved: " + msg );
+               
+           });
+}
+function checklocation(){
+  $.ajax({
+           url: "/api/getlocation/{{image.id}}",
+           method: "POST",
+           data: $("#add_coordinates").serializeArray()
+         }).done(function( msg ) {
+              alert( "Data Saved: " + msg );
+               
+           });
+}
+
+$("#settadataora").submit(function(ev){
+  ev.preventDefault();
+
+  alert("SETTA DATA  ORA")
+})
+
+$("#add_coordinates").submit(function(ev){
+        ev.preventDefault();
+         //ev.stopPropagation();
+         $.ajax({
+           url: "/api/addcoords/{{image.id}}",
+           method: "POST",
+           data: $("#add_coordinates").serializeArray()
+         }).done(function( msg ) {
+              alert( "Data Saved: " + msg );
+               
+           });
+       //alert("Submitted");
+     });
+
+  
+
+    function add2map(el,mapel){
+      //alert("Adjust Map location on this ")
+      lat = $(el).attr('data-lat');
+      lon = $(el).attr('data-lon');
+      img = $(el).attr('data-img');
+      
+      var myIcon = L.icon({
+            iconUrl: img,
+            iconSize: [40, 40],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76]
+            //shadowUrl: 'my-icon-shadow.png',
+            //shadowSize: [68, 95],
+            //shadowAnchor: [22, 94]
+              });
+              
+      if ( typeof mymap != "undefined" ) { 
+        console.log("!=UnDEFINED");
+            mymap.setView(lat,lon,16);
+            
+            
+            mymap.addMarker(lat,lon) //,myIcon);
+
+        //alert("EXIST")
+      } 
+        
+        else { 
+          console.log("UnDEFINED");
+          //alert("Non ESISTE")
+          mymap = new MyMap(mapel,lat,lon,16);
+          mymap.create();
+          mymap.addMarker(lat,lon,myIcon);
+        }
+      //mymap.addMarker(lat,lon);
+
+    }
+    function adjustLocation(img_id){
+      alert("Adjust Map location on this "+img_id)
+      mymap.addMarker(45.3307658,9.0948794);
+
+    }
+    function add2album(img_id){
+      alert("Add to album this "+img_id)
+    
+    }
+    function createMap(lat,lon,zoom,where){
+              
+      if ( typeof modalmap != "undefined" ) { 
+        console.log("!=UnDEFINED");
+            modalmap.setView(lat,lon,zoom);
+            
+            
+            modalmap.addMarker(lat,lon) //,myIcon);
+
+        //alert("EXIST")
+      } 
+        
+        else { 
+          console.log("UnDEFINED");
+          //alert("Non ESISTE")
+          modalmap = new MyMap(where,lat,lon,zoom);
+          modalmap.create();
+          modalmap.addMarker(lat,lon);
+        }
+        return modalmap;
+    }
+    function modifyThis(el){
+      
+      $("img.image2modify").attr('src',$(el).attr('data-img'))
+      lat = $(el).attr('data-lat');
+      lon = $(el).attr('data-lon');
+      img_id = $(el).attr('data-img_id');
+      $.ajax({
+              url: "/albums/show_modal_modify/"+img_id,
+              method: "GET",
+              //data: $("#creaalbum").serializeArray()
+            }).done(function( modalhtml ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  console.log("QUI CI SONO");
+                  
+
+                  $(".modal-modify").html(modalhtml);
+                  $('#modifyImage').modal('show');
+                  
+                  modalm = createMap(lat,lon,16,'mapmodify')
+                  $("#modifyImage").on("hidden.bs.modal", function () {
+                      alert("PORCA")
+                      if (modalm != null) {
+                        //modalm.remove();
+                        modalm = null;
+    }
+                    });
+                  
+                  
+                  
+
+                  
+              });
+     
+    }
+    function deleteThis(img_id){
+      alert("Delete this "+img_id)
+    }
+     //$(document).ready(function() {
+    function showModal(el){
+          console.log($(el).attr('data-img_id'))
+          img_id=$(el).attr('data-img_id')
+          album_id=$(el).attr('data-album_id')
+          $.ajax({
+              url: "/api/populatemodalcarousel/"+album_id+"/"+img_id,
+              method: "GET",
+              //data: $("#creaalbum").serializeArray()
+            }).done(function( msg ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  console.log("QUI CI SONO");
+                  item0 = '<div class="carousel-item active"><img src="';
+                  item1 = '<div class="carousel-item "><img src="';
+                  item2_0 = '" class="d-block w-100" alt="...">'
+                  caption = '<div class="carousel-caption d-none d-md-block"> <h5 class="text-bg-dark">' 
+                  caption_1 = '</h5><p class="text-bg-dark">'
+                  caption_2 =  '</p></div></div>';
+                  i=0;
+                  $(".carousel-inner").html("")
+                  
+                  msg.forEach(element => {
+                    //$(".carousel-caption").html("");
+                      console.log("{% get_settings_value 'MEDIA_URL' %}",element['path'])
+                      console.log("POLLO",((element['citta']== null ) ? 'xx' : element['citta']) )
+                      data = ((element['data'] == null ) ? 'x' : element['data']);
+                      citta = ((element['citta'] == null ) ? 'x' : element['citta']);
+ 
+                      if ( i == 0){
+                      item= item0+ "{% get_settings_value 'MEDIA_URL' %}/"+element['path']+item2_0 + caption + element['data'] +caption_1 + element['citta']+caption_2;
+                        //((element['data']== null ) ? '' : element['data']) + 
+                        //caption_1 + 
+                        //((element['citta']== null ) ? '' : element['citta']) + 
+                        //caption_2;
+                      } else {
+                        item= item1+ "{% get_settings_value 'MEDIA_URL' %}/"+element['path']+item2_0+ caption +  data +caption_1 + citta + caption_2;
+                        //((element['data']== null ) ? '' : element['data'])+
+                        //caption_1+ 
+                        //((element['citta']== null ) ? '' : element['citta'])+
+                        //caption_2;
+                      }
+                      $(".carousel-inner").append(item)
+
+                      i=+1;
+                      
+                  });
+
+                  
+              });
+              $('#fullscreenModal').modal('show');
+          /*
+          console.log('img[img-id="'+$(el).attr('img-id')+'"]')
+          console.log($('img[img-id="'+$(el).attr('img-id')+'"]').nextAll('img.gallery'))
+          allimg = $('img[img-id="'+$(el).attr('img-id')+'"]').nextAll('img.gallery')
+          //allimg = $(el).sibling('img.gallery');
+          console.log("POLLO",$(el).nextAll('img.gallery'))
+          $(allimg).each(function(){
+            console.log($(this).attr('src'))
+          })
+        $('#fullscreenModal').modal('show');
+        */
+      }
+//})
+  </script>
+  <script>
+   // import { OpenStreetMapProvider } from 'leaflet-geosearch';
+
+  //init_cropper()
+
+
+    class MyMap {
+      map;
+      key = 'pk.f2e02236859778187b2ae016d3759b54'
+      
+      constructor(mapel,latc, lonc, zoom) {
+        this.latc = latc;
+        this.lonc = lonc;
+        this.zoom = zoom;
+        this.mapel = mapel;
+      }
+      
+      create() {
+        // Creating map options
+        var streets = L.tileLayer.Unwired({
+          key: this.key,
+          scheme: "streets"
+        });
+        var mapOptions = {
+          center: [this.latc, this.lonc],
+          zoom: this.zoom,
+          scrollWheelZoom: true,
+          layers: [streets],
+          zoomControl: false
+        }
+      
+      // Creating a map object
+       this.map = new L.map(this.mapel, mapOptions);
+     
+      // Creating a Layer object
+      var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+     
+      // Adding layer to the map
+      this.map.addLayer(layer);
+      return this.map
+      }
+      addMarker(lat,lon,myIcon) {
+  
+        myIcon={draggable: 'true'}
+        
+      // L.marker([lat, lon],{'icon':myIcon}).addTo(this.#map)
+        var sl= L.marker([lat, lon],myIcon).addTo(this.map)
+        .bindPopup('A POLLO pretty CSS popup.<br> Easily customizable.')
+        .openPopup();
+        sl.on('drag',function(e) {
+        lat = sl.getLatLng().lat;
+        lon = sl.getLatLng().lng;
+        console.log("DRAG",lat,lon)
+        });
+        sl.on('dragend', function(event) {
+            var marker = event.target;
+            var lat = marker.getLatLng().lat;
+            var lon = marker.getLatLng().lng;
+            alert(lat +' '+ lon );
+            let text;
+            if (confirm("Press a button!") == true) {
+              text = "OK cambia location!";
+              $("#newlat").val(lat);
+                  $("#newlon").val(lon);
+            } else {
+              text = "You canceled!";
+            }
+            console.log(text)
+        });
+      }
+      setView(lat,lon,zoom){
+        this.map.setView([lat,lon],zoom)
+      }
+      getLatLon(){
+        var lat, lon;
+        this.map.addEventListener('mousemove', function(ev) {
+          console.log('LAT:',ev.latlng.lat);
+          lat = ev.latlng.lat;
+          //lat = ev.latlng.lat;
+          lon = ev.latlng.lng;
+          console.log("MOUSEMOVE",lat,lon)
+          });
+        
+      }
+      context(){
+        //var lat, lon;
+        var that=this;
+        this.map.on("contextmenu", function (event) {
+          //console.log("user right-clicked on map coordinates: " + event.latlng.toString(),event.latlng.lat);
+          lat = event.latlng.lat;
+          lon = event.latlng.lng;
+          console.log("EVENT",event);
+          
+          that.addMarker(lat,lon,{})
+          $("#newlat").val(lat);
+          $("#newlon").val(lon);
+          
+          //L.marker(event.latlng).addTo(this.map);
+          });
+          //return event.latlng
+      }
+      geocontrol() {
+        /*
+        const search = new GeoSearch.GeoSearchControl({
+            provider: new GeoSearch.OpenStreetMapProvider(),
+        });
+        //L.Control.geocoder().addTo(this.map);
+        this.map.addControl(search);
+        */
+        L.control.geocoder(this.key, {
+          // placeholder: 'Search nearby',
+          url: "https://api.locationiq.com/v1",
+          expanded: true,
+          panToPoint: true,
+          focus: true,
+          position: "topleft"
+        }).addTo(this.map);
+        //alert("POLLO");
+        
+      }
+  }
+  
+  
+  var lat;
+  var lon;
+  {% if image.lat %}
+  pollo = new MyMap('mapmodify',{{image.lat}},{{image.lon}},16);
+  {% else %}
+  pollo = new MyMap('mapmodify',45.04,7.7780,14);
+  {% endif %}
+
+  pollo.create()
+  //pollo.getLatLon()
+  pollo.context()
+  pollo.geocontrol()
+  //pollo.getLatLon()
+  //lat = latlng.lat;
+  //lon = latlng.lng;
+  console.log("FUORI",lat,lon);
+
+
+		
+
+    </script>
+

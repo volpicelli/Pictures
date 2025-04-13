@@ -1,0 +1,302 @@
+{% load static %}
+{% load settings_value %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+<script>
+    // Constants for clarity and maintainability
+    const ACTION_ADD_IMAGES = 5;
+    const ACTION_ADD_VIDEOS = 4;
+    const DEFAULT_MAP_ZOOM = 16;
+    const MAX_UPLOAD_FILES = 100;
+    const DEFAULT_ICON_SIZE = [40, 40];
+    const DEFAULT_ICON_ANCHOR = [22, 94];
+    const DEFAULT_POPUP_ANCHOR = [-3, -76];
+    
+    const url_upload2album = "/api/upload/{{this.id}}"; 
+
+    // Map Manager - Encapsulating map logic
+    class MapManager {
+        #map;
+        constructor(mapElementId, initialLat, initialLon, initialZoom) {
+            this.mapElementId = mapElementId;
+            this.lat = initialLat;
+            this.lon = initialLon;
+            this.zoom = initialZoom;
+            this.#map = null;
+        }
+
+        createMap() {
+            // Creating map options
+            const mapOptions = {
+                center: [this.lat, this.lon],
+                zoom: this.zoom
+            };
+
+            // Creating a map object
+            this.#map = new L.map(this.mapElementId, mapOptions);
+
+            // Creating a Layer object
+            const layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+
+            // Adding layer to the map
+            this.#map.addLayer(layer);
+
+            return this.#map;
+        }
+
+        addMarker(lat, lon, iconUrl = null) {
+            let myIcon = null
+            if (iconUrl) {
+                myIcon = L.icon({
+                    iconUrl: iconUrl,
+                    iconSize: DEFAULT_ICON_SIZE,
+                    iconAnchor: DEFAULT_ICON_ANCHOR,
+                    popupAnchor: DEFAULT_POPUP_ANCHOR,
+                });
+            }
+            
+            if (myIcon){
+                L.marker([lat, lon], { 'icon': myIcon }).addTo(this.#map)
+                .bindPopup('A POLLO pretty CSS popup.<br> Easily customizable.')
+                .openPopup();
+            } else {
+                L.marker([lat, lon]).addTo(this.#map)
+                .bindPopup('A POLLO pretty CSS popup.<br> Easily customizable.')
+                .openPopup();
+            }
+        }
+
+        setMapCenter(lat, lon, zoom) {
+            this.#map.setView([lat, lon], zoom);
+        }
+
+        isMapDefined(){
+            return this.#map !== null && typeof this.#map !== "undefined";
+        }
+    }
+
+    // Global map instances (for album and modal)
+    let albumMap;
+    let modalMap;
+    let modalm; //modalmap_modify
+    // Helper functions for common tasks
+
+    function getAllSelectedImageIds() {
+        const selectedIds = [];
+        $('input.img_selected:checkbox:checked').each(function () {
+            selectedIds.push($(this).val());
+        });
+        console.log(selectedIds)
+        return selectedIds;
+    }
+
+    function hideMap() {
+        $('#mapdiv').addClass('d-none');
+    }
+
+    function showModal(modalId) {
+        $(modalId).modal('show');
+    }
+
+    function hideModal(modalId) {
+        $(modalId).modal('hide');
+    }
+
+    function initDropzone(form_id,url_upload) {
+
+      Dropzone.options.form_id = { // The camelized version of the ID of the form element
+       
+       // The configuration we've talked about above
+       url: url_upload,
+       autoProcessQueue: false,
+       uploadMultiple: true,
+       parallelUploads: MAX_UPLOAD_FILES,
+       maxFiles: MAX_UPLOAD_FILES,
+       acceptedFiles: 'image/*,.mp4,.mkv,.avi,.mov',
+       //acceptedFiles: 'image/*',
+       clickable: true,
+       previewsContainer: '#previewimgs',
+       addRemoveLinks: true,
+       dictDefaultMessage: "Sposta qui i files o clicca per sceglierle" ,
+     
+       // The setting up of the dropzone
+       init: function() {
+         var myDropzone = this;
+     
+         // First change the button to actually tell Dropzone to process the queue.
+         this.element.querySelector("button[type=submit]").addEventListener("click", function(e) {
+           // Make sure that the form isn't actually being sent.
+           e.preventDefault();
+           e.stopPropagation();
+           myDropzone.processQueue();
+         });
+     
+         // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
+         // of the sending event because uploadMultiple is set to true.
+         this.on("sendingmultiple", function() {
+             console.log("SEND");
+           // Gets triggered when the form is actually being sent.
+           // Hide the success button or the complete form.
+         });
+         this.on("successmultiple", function(files, response) {
+           // Gets triggered when the files have successfully been sent.
+           // Redirect user or notify of success.
+         });
+         this.on("errormultiple", function(files, response) {
+              alert("ERROR");
+           // Gets triggered when there was an error sending the files.
+           // Maybe show form again, and notify user of error
+         });
+       }
+      }
+      $("form#"+form_id).dropzone(Dropzone.options.form_id);
+     }
+    // Function to add a marker to a map
+    function addMarkerToMap(element, mapElementId) {
+        const lat = $(element).attr('data-lat');
+        const lon = $(element).attr('data-lon');
+        const img = $(element).attr('data-img');
+        $("#" + mapElementId).removeClass("d-none");
+        
+        if (mapElementId == 'map'){
+            if (!albumMap.isMapDefined()) {
+                albumMap.createMap();
+            } 
+            albumMap.addMarker(lat, lon,img);
+        } else if (mapElementId == 'mapmodify') {
+            if (!modalm.isMapDefined()) {
+                modalm.createMap();
+            } 
+            modalm.addMarker(lat, lon,img);
+        }
+
+        
+    }
+
+    function setExifData(imageId) {
+        alert(imageId);
+    }
+
+    function adjustMapLocation(imageId) {
+        alert("Adjust Map location on this " + imageId);
+        albumMap.addMarker(45.3307658, 9.0948794); // Example coordinates
+    }
+
+    function addImageToAlbum(imageId) {
+        alert("Add to album this " + imageId);
+    }
+
+    function populateCarouselModal(album_id, img_id){
+          
+          $.ajax({
+              url: "/api/populatemodalcarousel/"+album_id+"/"+img_id,
+              method: "GET",
+              //data: $("#creaalbum").serializeArray()
+            }).done(function( msg ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  console.log("QUI CI SONO");
+                  item0 = '<div class="carousel-item active"><img src="';
+                  item1 = '<div class="carousel-item "><img src="';
+                  item2_0 = '" class="d-block w-100" alt="...">'
+                  caption = '<div class="carousel-caption d-none d-md-block"> <h5 class="bg-transparent ">' 
+                  caption_1 = '</h5><p class="bg-transparent ">'
+                  caption_2 =  '</p></div></div>';
+                  i=0;
+                  $(".carousel-inner").html("")
+                  
+                  msg.forEach(element => {
+                    //$(".carousel-caption").html("");
+                      console.log("{% get_settings_value 'MEDIA_URL' %}",element['path'])
+                      console.log("POLLO",((element['citta']== null ) ? 'xx' : element['citta']) )
+                      data = ((element['data'] == null ) ? 'x' : element['data']);
+                      citta = ((element['citta'] == null ) ? 'x' : element['citta']);
+ 
+                      if ( i == 0){
+                      item= item0+ "{% get_settings_value 'MEDIA_URL' %}/"+element['path']+item2_0 + caption + element['data'] +caption_1 + element['citta']+caption_2;
+                        //((element['data']== null ) ? '' : element['data']) + 
+                        //caption_1 + 
+                        //((element['citta']== null ) ? '' : element['citta']) + 
+                        //caption_2;
+                      } else {
+                        item= item1+ "{% get_settings_value 'MEDIA_URL' %}/"+element['path']+item2_0+ caption +  data +caption_1 + citta + caption_2;
+                        //((element['data']== null ) ? '' : element['data'])+
+                        //caption_1+ 
+                        //((element['citta']== null ) ? '' : element['citta'])+
+                        //caption_2;
+                      }
+                      $(".carousel-inner").append(item)
+
+                      i=+1;
+                      
+                  });
+
+                  
+              });
+              showModal('#fullscreenModal');
+    }
+
+    function modifyImage(element) {
+        $("img.image2modify").attr('src', $(element).attr('data-img'))
+        const lat = $(element).attr('data-lat');
+        const lon = $(element).attr('data-lon');
+        const img_id = $(element).attr('data-img_id');
+        $.ajax({
+            url: "/albums/show_modal_modify/" + img_id,
+            method: "GET",
+        }).done(function (modalHtml) {
+            $(".modal-modify").html(modalHtml);
+            showModal('#modifyImage');
+            modalm = new MapManager('mapmodify', lat, lon, DEFAULT_MAP_ZOOM);
+            modalm.createMap();
+            
+            $("#modifyImage").on("hidden.bs.modal", function () {
+              
+                if (modalm.isMapDefined()) {
+                    modalm = null;
+                }
+            });
+        });
+    }
+
+    function deleteImage(imageId) {
+        let confirmation = confirm("Cancella !");
+        if (confirmation) {
+            $.ajax({
+                url: "/api/delete/" + imageId,
+                method: "GET",
+            }).done(function (msg) {
+                $("#card_" + imageId).remove();
+                console.log(msg);
+            });
+        }
+    }
+   
+
+    $(document).ready(function () {
+        //Initialize Map
+        albumMap = new MapManager('map', 0, 0, DEFAULT_MAP_ZOOM);
+
+        // Image actions
+        $('.makeactionfoto').on('change', function () {
+            if (this.value == ACTION_ADD_IMAGES) {
+                showModal('#modalDialogScrollable');
+                $("#uploadFoto").addClass("dropzone");
+                initDropzone("uploadFoto",url_upload2album);
+            }
+        });
+        
+        // Video actions
+        $('.makeactionvideo').on('change', function () {
+            if (this.value == ACTION_ADD_VIDEOS) {
+                $(".video-title").html(" Carica Video per questo Album")
+                showModal('#modalDialogScrollable');
+                $("#uploadFoto").addClass("dropzone");
+                initDropzone("uploadFoto",url_upload2album);
+            }
+        });
+    });
+</script>

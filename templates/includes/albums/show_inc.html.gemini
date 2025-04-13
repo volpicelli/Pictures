@@ -1,0 +1,47 @@
+{% load settings_value %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>{{this.nome}} ( {{foto|length}} ) </h1>
+        <p class="text-center">{{this.descrizione}}</p>
+
+        <div class="row align-right">
+            <div class="col-7">
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                                aria-selected="true">Foto ({{foto|length}})</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                data-bs-target="#pills-profile" type="button" role="tab"
+                                aria-controls="pills-profile" aria-selected="false">Video ( {{video|length}} )
+                        </button>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div id="mapdiv" class="row d-none ">
+        <div class="col-11">
+            <div id="map" style=" height: 480px;" class="mb-5"></div>
+        </div>
+        <div class="col-1">
+            <button type="button" onclick="hideMap()" class="z-3 btn btn-dark btn-sm">x</button>
+        </div>
+    </div>
+
+    <section class="section">
+
+
+        <div class="tab-content pt-2" id="myTabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="home-tab">
+                <!-- FOTO -->
+                <div class="row mb-3">
+                    <div class="col-7">
+                    </div>
+
+                    <div class="

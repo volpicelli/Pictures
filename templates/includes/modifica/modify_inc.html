@@ -1,0 +1,105 @@
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Form Layouts</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item">Forms</li>
+          <li class="breadcrumb-item active">Layouts</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+         <!-- image cropping -->
+         
+          <!-- /image cropping -->
+      <div class="row">
+        <div class="col-lg-10">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Crea Nuovo Album</h5>
+
+              <!-- Horizontal Form -->
+              <div class="row ">
+                  <div class="col-4">
+                    <img src="{{image.image.url}}" img-id="{{one.id}}" class="object-fit-contain image2modify " alt="...">
+
+                  </div>
+                  <div class="col-7 ">
+                    <div class="row mb-2">
+                      <div class="col-5">
+                        <label for="oldlat" class="form-label">Lat Esistente</label>
+                        <input type="text" class="form-control" id="oldlat" name="oldlat" readonly value="{{image.lat}}">
+                      </div>
+                      <div class="col-5">
+                        <label for="oldlon" class="form-label">Lon Esistente</label>
+                  
+                        <input type="text" class="form-control" id="oldlon" name="oldlon" readonly value="{{image.lon}}">
+                      </div>
+                    </div>
+
+                    <div id = "mapmodify" style = "height: 400px"></div>
+
+                      <form id="add_coordinates" method="post">{% csrf_token %}
+                        <div class="row">
+                          <div class="col-5">
+                          <input type="hidden" name="image_id" value="{{image.id}}">
+                            Lat : <input type="text" class="form-control" id="newlat" name="newlat"  value="">
+                          </div>
+                          <div class="col-5">
+                            Lon : <input type="text" class="form-control" id="newlon" name="newlon"  value="">
+                          </div>
+                          </div>
+                         
+                          <button type="submit" > Cambia Coodinate</button>
+                          <button type="button"  onclick="checklocation()"> Check Location</button>
+                        </form>
+
+                      <br><br><br>
+                      <h5 >Setta Data e Ora ( EXIF datatime_original ) </h5>
+                      <form id="settadataora" method="post">{% csrf_token %}
+
+                      <div class="row mb-3">
+                        <label for="inputDate" class="col-sm-2 col-form-label">Date</label>
+                        <div class="col-sm-10">
+                          <input type="date" class="form-control">
+                        </div>
+                      </div>
+                      <div class="row mb-3">
+                        <label for="inputTime" class="col-sm-2 col-form-label">Time</label>
+                        <div class="col-sm-10">
+                          <input type="time" class="form-control">
+                        </div>
+                      </div>
+                      <button type="submit" > Setta Data</button>
+
+                      </form>
+                    </div>
+                    
+
+                    
+                  </div>
+                  
+              </div>
+              
+              
+               
+              <!-- End Horizontal Form -->
+
+            </div>
+          </div>
+
+          
+
+        </div>
+      </div>
+
+     
+     
+
+    </section>
+   
+  </main><!-- End #main -->

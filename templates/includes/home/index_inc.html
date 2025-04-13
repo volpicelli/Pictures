@@ -1,0 +1,139 @@
+{% load settings_value %}
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>{{this.nome}} ( {{foto|length}} ) </h1>
+    <p class="text-center">{{this.descrizione}}</p>
+    <!--
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Components</li>
+        <li class="breadcrumb-item active">Cards</li>
+      </ol>
+    </nav>
+    -->
+    <div class="row align-right">
+      <div class="col-7">
+         <!-- Full Screen Modal -->
+         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#fullscreenModal">
+          Full Screen Modal
+        </button>
+
+        <div class="modal fade" id="fullscreenModal" tabindex="-1">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Full Screen Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">With controls</h5>
+      
+                    <!-- Slides with controls -->
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+
+                       
+                      </div>
+      
+                      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
+      
+                    </div><!-- End Slides with controls -->
+      
+                  </div>
+                </div>
+                    </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div><!-- End Full Screen Modal-->
+
+      </div>
+      <div class="col-5">
+        <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+          <option selected>Azione da compiere</option>
+          <option value="1">Cancella tutte le selezionate</option>
+          <option value="2">Assegna  selezionate ad un album esistente</option>
+          <option value="3">Crea nuovo album per selezionate</option>
+          <option value="3">Assegna localita' a selezionate</option>
+        </select>
+      </div>
+    </div>
+    
+  </div>
+<section class="section">
+  <div class="container-fluid">
+    <div class="row ">
+
+      {% for one in foto %}
+  
+  
+        <div class="col-lg-3 d-none d-lg-block">
+      
+          <!-- Card with an image on top -->
+          <div class="card">
+            <div class="card-header">
+              <div class="row ">
+                <div class="col-1"></div>
+                <div class="col-9">
+                  <span style="font-size: 0.8rem; " > {% if one.image.citta %} {{one.image.citta}} , {% endif %} {{one.image.data|date:"j/n/y H:i"}} </span>
+                </div>
+                <div class="col-1">
+                    <input class="form-check-input " style="border-color: #000000;" type="checkbox" value="" id="flexCheckDefault">&nbsp; &nbsp; 
+                </div>
+                
+              </div>
+            </div>
+
+            <!--
+           
+            -->
+            <img src="{% get_settings_value 'MEDIA_URL' %}/{{ one.image.image.name }}" img-id="{{one.id}}" class="card-img-top object-fit-contain gallery" alt="...">
+
+            <div class="card-body ">
+
+              <!-- 
+              <p class="fst-italic fs-6 "><small>{% if one.image.citta %} {{one.image.citta}} {% endif %}<br>{{one.image.data|date:"d/M/Y H:i"}} </small></p>
+            <p class="card-text"> <strong> </strong></p>-->
+            </div>
+            <div class="card-footer">
+              <div class="icon text-end">
+                <i class="bi bi-trash"></i> &nbsp;
+                <i class="bi bi-pencil"></i>&nbsp; 
+                <a href="#" onclick="showModal(this)" img-id="{{one.id}}" album-id="{{this.id}}"><i class="bi bi-eye"></i> </a>&nbsp; 
+                <i class="bi bi-plus-circle"></i>&nbsp; 
+                <i class="bi bi-pin-map"></i> 
+                &nbsp; &nbsp; 
+              </div>
+            </div>
+           
+          </div>
+          <!-- End Card with an image on top -->
+        
+        </div>
+   
+        {% endfor %}
+  
+    
+    </div>
+
+
+  </div>
+</section>
+    
+
+</main><!-- End #main -->

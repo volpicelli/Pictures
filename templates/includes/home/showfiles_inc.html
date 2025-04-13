@@ -1,0 +1,315 @@
+{% load settings_value %}
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>{{this.nome}} ( {{foto|length}} )  </h1>
+    <p class="text-center">{{this.descrizione}}</p>
+    <!--
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item">Components</li>
+        <li class="breadcrumb-item active">Cards</li>
+      </ol>
+    </nav>
+    -->
+    <div class="row align-right">
+      <div class="col-7">
+      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Foto ({{foto|length}})</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Video ( {{video|length}} )</button>
+        </li>
+       
+      </ul>
+      </div>
+<!--
+      <div class="col-5">
+        <select class="makeaction form-select form-select-sm" aria-label=".form-select-sm example">
+          <option selected>Azione da compiere</option>
+          <option value="1">Cancella tutte le selezionate</option>
+          <option value="2">Assegna  selezionate ad un album esistente</option>
+          <option value="3">Crea nuovo album per selezionate</option>
+          <option value="4">Geolocalizza selezionate</option>
+          <option value="5">Aggiungi Immagini </option>
+        </select>
+      </div>
+-->
+    </div>
+    
+  </div>
+  <div id="mapdiv" class="row d-none ">
+    <div class="col-11">
+  <div id = "map" style=" height: 480px;" class="mb-5" > </div>
+  </div>
+  <div class="col-1">
+    <button type="button" onclick="hidemap()" class="z-3 btn btn-dark btn-sm">x</button>
+
+
+  </div>
+</div>
+  <!--
+  <iframe width="425" height="350" src="https://www.openstreetmap.org/export/embed.html?bbox=7.723045349121095%2C45.018760374852164%2C7.848272323608398%2C45.06479159126729&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/#map=14/45.0418/7.7857">Visualizza mappa ingrandita</a></small>
+-->
+  <section class="section">
+
+
+    
+<div class="tab-content pt-2" id="myTabContent">
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="home-tab">
+    <!-- FOTO -->
+     <div class="row mb-3">
+      <div class="col-7">
+        </div>
+
+      <div class="col-5">
+        <select class="makeactionfoto form-select form-select-sm" aria-label=".form-select-sm example">
+          <option selected>Azione da compiere</option>
+          <option value="1">Cancella tutte le selezionate</option>
+          <option value="2">Assegna  selezionate ad un album esistente</option>
+          <option value="3">Crea nuovo album per selezionate</option>
+          <option value="4">Geolocalizza selezionate</option>
+          <option value="5">Aggiungi Immagini </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row ">
+        <!-- foto contiene oggetti della class Image2Album -->
+        {% for one in files %}
+       
+    
+    
+          <div id="card_{{one.id}}" class="col-lg-{{col}} col-md-{{col}} d-none d-lg-block d-md-block">
+        
+            <!-- Card with an image on top -->
+            <div class="card">
+              <div class="card-header">
+                <div class="row ">
+              
+                  <div class="col-10">
+                    <span style="font-size: 0.8rem; " >  {{one.date}}  {{one.date|date:"j/n/y H:i"}} </span><br>
+                    <span data-bs-toggle="tooltip" data-bs-placement="bottom"  style="font-size: 0.8rem; " title="{{one.image.display_name}}"> {{one.image.display_name|truncatechars:25 }}  </span>
+                  </div>
+                  <div class="col-1">
+                      <input class="form-check-input img_selected" style="border-color: #000000;" type="checkbox" value="{{one.id}}" >&nbsp; &nbsp; 
+                  </div>
+                  
+                </div>
+              </div>
+
+
+              <div class="card-body " style="min-height:300px">
+
+                <img src="{% get_settings_value 'MEDIA_URL' %}{{ one.file }}" img-id="{{one.id}}" class="card-img-top object-fit-contain gallery" alt="...">
+
+              </div>
+              <div class="card-footer">
+                <div class="icon text-end">
+                  <i class="bi bi-trash" onclick="deleteThis({{one.id}})"></i> &nbsp;
+                  <a href="/albums/modify/{{one.image.id}}" target="_blank" ><i class="bi bi-pencil"   data-img_id="{{one.image.id}}" 
+                  data-lat="{{one.image.lat}}" 
+                  data-lon="{{one.image.lon}}" 
+                  data-img="{% get_settings_value 'MEDIA_URL' %}{{ one.image.image.name }}"></i>&nbsp; </a>
+                  <a href="#" onclick="showModal(this)" data-img_id="{{one.id}}" data-album_id="{{this.id}}"><i class="bi bi-eye"></i> </a>&nbsp; 
+                  <i class="bi bi-plus-circle" onclick="add2album({{one.id}})"></i>&nbsp; 
+                  <a href="#" ><i class="bi bi-pin-map" onclick="add2map(this,'mapdiv')" 
+                    data-lat="{{one.image.lat}}" 
+                    data-lon="{{one.image.lon}}" 
+                    data-img="{% get_settings_value 'MEDIA_URL' %}{{ one.image.image.name }}" >
+                  </i></a>
+              
+                  <a href="/modifica/setexif/{{one.image.id}}"> <i class="bi bi-map"  taget="_blank"></i> </a>
+                  &nbsp; &nbsp; 
+                </div>
+              </div>
+            
+            </div>
+            <!-- End Card with an image on top -->
+          
+          </div>
+    
+          {% endfor %}
+    
+      
+      </div>
+
+
+    </div>
+    <!-- END FOTO -->
+  </div>
+
+  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="profile-tab">
+    <!-- VIDEO -->
+    <div class="row mb-3">
+      <div class="col-7">
+        </div>
+
+      <div class="col-5">
+        <select class="makeactionvideo form-select form-select-sm" aria-label=".form-select-sm example">
+          <option selected>Azione da compiere</option>
+          <option value="1">Cancella tutte le selezionate</option>
+          <option value="2">Assegna  selezionati ad un album esistente</option>
+          <option value="3">Crea nuovo album per selezionati</option>
+          <option value="4">Aggiungi Video </option>
+        </select>
+      </div>
+    </div>
+    <div class="container-fluid">
+     <div class="row ">
+      </div>
+    </div>
+    <!-- END VIDEO -->
+  </div>
+
+</div>
+
+</section>
+    
+
+<!-- MODAL -->
+<div class="modal fade" id="modalDialogScrollable" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal Dialog Scrollable</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="uploadFoto" method="POST" class=" addmedia "  enctype="multipart/form-data">{% csrf_token %}
+          <div class="row">
+    
+            <div class="col-12 col-md-12 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="video-title card-title">Carica Immagini in questo album</h5>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body ">
+                             <div id="previewimgs" class="dropzone-previews">
+    
+                             </div>
+                             <!--
+                             <input type="file" name="file" multiple />
+                              
+                            File uploader with multiple files upload 
+                            <input type="file" name="fileupload"  multiple>
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+             
+            <div class="col-12 d-flex justify-content-end">
+    
+                                        <button type="submit" class="btn btn-primary me-1 mb-1">CARICA</button>
+                                        <!-- 
+                                            <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                        -->
+            </div>
+          </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End Modal Dialog Scrollable-->
+
+<!-- END MODAL -->
+
+</main><!-- End #main -->
+
+<!-- Carousel sulle foto MODAL -->
+<div class="modal fade" id="fullscreenModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Full Screen Modal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">With controls</h5>
+
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+            
+              </div>
+
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+
+            </div>
+            
+
+          </div>
+        </div>
+            </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+
+
+<!-- Full Screen Modal -->
+
+
+<div class="modal fade" id="modifyImage" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modify Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body modal-modify">
+         <!-- Horizontal Form 
+
+         <div class="row ">
+            <div class="col-5">
+              <label for="oldlat" class="form-label">Lat</label>
+              <input type="text" class="form-control" id="oldlat" name="oldlat" readonly>
+            </div>
+            <div class="col-5">
+              <label for="oldlon" class="form-label">Lon</label>
+
+            <input type="text" class="form-control" id="oldlon" name="oldlon" readonly>
+            </div>
+         </div>
+
+          <div class="row ">
+            <div class="col-5">
+              <img src="" img-id="{{one.id}}" class="image2modify " alt="...">
+            </div>
+            <div class="col-7">
+              <div id = "mapmodify" style = "height: 400px"></div>
+              </div>
+            
+          </div>
+          -->
+          <!-- End Horizontal Form -->
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div><!-- End Full Screen Modal-->
+
