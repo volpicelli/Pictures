@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import PopulateModalCarousel,CreaAlbum,UploadImages2Album,SetCoordinates,\
         DeleteImage,UploadMediaFile,GetLocation,Test,CallApi,DeleteMultipleFoto,RegistraData,\
-        RileggiDataSelezionate
+        RileggiDataSelezionate,AncheAltroAlbum,EliminaFotoDaAlbum
         
 
 urlpatterns = [ 
@@ -17,12 +17,14 @@ urlpatterns = [
         path(r'create', CreaAlbum.as_view()),
         path(r'addcoords/<int:image_id>', SetCoordinates.as_view()),
         
-         #path(r'deletemulti', DeleteMultipleFoto.as_view()),
+         path(r'deletemulti', DeleteMultipleFoto.as_view()),
          path(r'callapi', CallApi.as_view()),
          #path(r'test', Test.as_view()),
          path(r'registraData', RegistraData.as_view()),
          path(r'rileggidataimgs', RileggiDataSelezionate.as_view()),
        
+        path(r'anchealtroalbum', AncheAltroAlbum.as_view()),
+        path(r'eliminafotodaalbum', EliminaFotoDaAlbum.as_view()),
         
 ]
 #urlpatterns = format_suffix_patterns(urlpatterns)

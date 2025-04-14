@@ -90,7 +90,62 @@ class CallApi(APIView):
             im.delete()
 
         return Response(par)
-    
+
+class EliminaFotoDaAlbum(APIView):
+    def post(self,request):
+        #par = request.POST.get('paramName')
+        par=json.loads(request.body)
+        dd=par['paramName']
+        album = par['album']
+        
+        for one in dd :
+            i2a=Image2Album.objects.get(pk=one)
+            im_id=i2a.image.id
+            i2ai=Image2Album.objects.filter(image_id=im_id)
+            if len(i2ai) == 1:
+                # album_id=1 => VArie
+                pp=Image2Album(album_id=1,image_id=im_id)
+                i2ai[0].delete()
+                pp.save()
+            if len(i2ai) > 1:
+                i2ai.get(album_id=album).delete()
+        
+        msg = {}
+        msg['success'] = "Eliminati dall'album :"
+        msg['image2Abum ID'] = par
+        return Response(msg)
+            
+
+class AncheAltroAlbum(APIView):
+    def post(self,request):
+        #par = request.POST.get('paramName')
+        par=json.loads(request.body)
+        dd=par['paramName']
+        altro_album = par['album']
+
+
+        #imq=Image2Album.objects.filter(album_id=altro_album)
+        #dest_dirname = os.path.dirname(imq[0].image.image.name)
+        
+        for one in dd :
+            im=Image2Album.objects.get(pk=one)
+            #source_path = im.image.image.path
+            
+            #source_name = im.image.image.name
+            #dest_name = os.path.join(dest_dirname,os.path.basename(source_path))
+            #dest_path = os.path.join(settings.MEDIA_ROOT ,dest_dirname,os.path.basename(source_path))
+
+            #os.rename(source_path, dest_path)
+            pp=Image2Album(album_id=altro_album,image_id=im.image.id)
+            #pp.image.image.name= dest_name #os.path.join('Bretagna2024',os.path.basename(initial_path))
+            #pp.image.save()
+            pp.save()
+            #im.delete()
+
+        return Response(par)
+ 
+
+
 class DeleteMultipleFoto(APIView):
     def post(self,request):
         par=json.loads(request.body)

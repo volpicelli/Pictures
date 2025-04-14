@@ -122,7 +122,7 @@
                   <div class="col-1"></div>
                   -->
                   <div class="col-10">
-                    <span style="font-size: 0.8rem; " > {% if one.citta %} {{one.citta}} , {% endif %}  {{one.ora}} </span><br>
+                    <span style="font-size: 0.8rem; " > {% if one.citta %} {{one.citta}} , {% endif %} {{one.data}} {{one.ora}} </span><br>
                     <span data-bs-toggle="tooltip" data-bs-placement="bottom"  style="font-size: 0.8rem; " title="{{one.display}}"> {% if one.display %} {{one.display|truncatechars:25 }} {% endif %} </span>
                   </div>
                   <div class="col-1">

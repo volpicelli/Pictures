@@ -124,21 +124,16 @@ class PrimaPagina(View):
     
  
     def get(self,request):
-            # col setta il numero di foro per riga col=3 mette 4 colonne ( 3x4=12) col-2 ne mette 6 ( 2x6=12)
-        #tmp = Immagine.objects.filter(album_id=49).order_by('-data')
-        #im = Immagine.objects.filter(album_id=49).values('data__year','data__month','data__day').annotate(total=Count('id'))
-        #im = tmp.values('data__year','data__month','data__day').annotate(total=Count('id'))#.order_by('-data')
-        #im=Immagine.objects.filter(album_id=49).order_by('-data__date').values('data__year','data__month').annotate(total=Count('id'))
+            # col setta il numero di foto per riga col=3 mette 4 colonne ( 3x4=12) col-2 ne mette 6 ( 2x6=12)
+        
         a = Album.objects.get(pk=1)
-        i2abb = a.albums.all()#.annotate(key=Trunc('image__data','day')) #.values('image__data__year','image__data__month','image__id').annotate(total=Count('id'))
-        #i2abb = a.albums.all().order_by('-image__data__year','-image__data__month').values('image__data__year','image__data__month','image__id').annotate(total=Count('id'))
-        #i2a = a.albums.all().order_by('-data__year','-data__month').values('data__year','data__month').annotate(total=Count('id'))
-        t = i2abb.annotate(month=TruncMonth('image__data')).values('month').annotate(c=Count('id'))
+        i2abb = a.albums.all()
+        t = i2abb.annotate(month=TruncMonth('image__data')).values('month').annotate(c=Count('id')).order_by('-month')
+        
         r=[]
 
         for s in t:
                 if s['month']:
-                #i = s.values('image__data__year','image__data__month').annotate(total=Count('id'))
                         item={}
                         item['year'] = s['month'].year
                         item['month'] = s['month'].month
@@ -149,13 +144,12 @@ class PrimaPagina(View):
                         months=['tt','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
                         item['nomemese']=months[s['month'].month]
                 
-                #im=i2abb.filter(image__data__date=dd).order_by('-image__data')
-                        im=i2abb.filter(image__data__year=s['month'].year,image__data__month=s['month'].month).order_by('image__data')
+                        im=i2abb.filter(image__data__year=s['month'].year,image__data__month=s['month'].month).order_by('-image__data')
                         fotos=[]
                         for i in im:
                                 ora = i.image.data.strftime("%H:%M:%S")
                                 dd = i.image.data.strftime('%Y-%m-%d')
-                                f={'id':i.image.id,
+                                f={'id':i.id,
                                         'foto': i.image.image.name,
                                         'ora': ora,
                                         'lat':i.image.lat,
@@ -165,12 +159,8 @@ class PrimaPagina(View):
                                 fotos.append(f)
                         item['fotos']=fotos
                         r.append(item)
-                #response.append(item)
-        #album = Album.objects.all().order_by('-create').first()
         
         context={'items':r,'col':3}
-
-
 
         return render(request,self.template_name, context)
 

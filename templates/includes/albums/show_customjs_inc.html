@@ -22,6 +22,22 @@ let url_upload2album = "/api/upload/{{this.id}}";
 
 $('.makeactionfoto').on('change', function() {
   //alert( this.value );
+  if (this.value == 1 ){
+
+      assegnaAncheAltroAlbum()
+
+  }
+
+  if (this.value == 10 ){
+
+    // EliminaDaQuestoAlbum()
+    //eliminafotodaalbum
+    //EliminaDaAlbum form
+    alert("Elimina da questo Album")
+    call_eliminaDaAlbum( {{this.id}} )
+
+  }
+
   // modalAssegnaAltroAlbum
   if (this.value ==2 ){
 
@@ -76,6 +92,18 @@ function rileggiDataImmagini(){
   
 
 }
+function call_eliminaDaAlbum(aid){
+  arr = getAllCheckedCheckbox()
+
+  $('#modalEliminaDaAlbum').modal('show'); 
+
+}
+function assegnaAncheAltroAlbum(){
+
+  arr = getAllCheckedCheckbox()
+  $('#modalAssegnaAncheAltroAlbum').modal('show'); 
+
+}
 function assegnaImgsAlbum()
 {
 
@@ -84,6 +112,26 @@ function assegnaImgsAlbum()
 
     $('#modalAssegnaAltroAlbum').modal('show'); 
 }
+
+
+$( "#EliminaDaAlbum" ).on( "submit", function( event ) {
+  //alert( "Handler for `submit` called." );
+  //arr = getAllCheckedCheckbox()
+  //console.log(arr);
+  console.log($( "#assegnaAncheAltroAlbum option:selected" ).val() )
+  EliminaDaAlbum($( "#assegnaAncheAltroAlbum option:selected" ).val())
+  event.preventDefault();
+});
+
+
+$( "#assegnaAncheAltroAlbum" ).on( "submit", function( event ) {
+  //alert( "Handler for `submit` called." );
+  //arr = getAllCheckedCheckbox()
+  //console.log(arr);
+  console.log($( "#assegnaAncheAltroAlbum option:selected" ).val() )
+  AssegnaAncheAltroAlbum($( "#assegnaAncheAltroAlbum option:selected" ).val())
+  event.preventDefault();
+});
 
 $( "#assegnaAlbum" ).on( "submit", function( event ) {
   //alert( "Handler for `submit` called." );
@@ -282,6 +330,51 @@ function modifyThis(el){
      
      
 }
+function EliminaDaAlbum(album_id){
+  alert({{this.id}});
+  
+  arr_id = getAllCheckedCheckbox()
+  if (arr_id.length == 0) {
+    $(".errorMsg").html("ERRORE");
+  } else {
+            $.ajax({
+              url: "/api/eliminafotodaalbum",
+              method: "POST",
+              dataType: "json",
+              data: JSON.stringify({ 'paramName': arr_id ,'album': '{{this.id}}' }),
+              
+              }).done(function( msg ) {
+                  
+                  console.log(msg);
+
+                  });
+          }
+
+}
+function AssegnaAncheAltroAlbum(album_id){
+  console.log("CALL Anche Altro",arr_id)
+  arr_id = getAllCheckedCheckbox()
+  if (arr_id.length == 0) {
+    $(".errorMsg").html("ERRORE");
+  } else {
+            $.ajax({
+              url: "/api/anchealtroalbum",
+              method: "POST",
+              dataType: "json",
+              data: JSON.stringify({ 'paramName': arr_id ,'album': album_id}),
+              
+              }).done(function( msg ) {
+                  //alert( "Data Saved: " + msg.success );
+                  //console.log(msg);
+                  //$("#card_"+img_id).remove();
+                  //location.reload();
+                  console.log(msg);
+
+                  });
+          }
+}
+
+
 function AssegnaAlbum(album_id){
   console.log("CALLAPI",arr_id)
   arr_id = getAllCheckedCheckbox()

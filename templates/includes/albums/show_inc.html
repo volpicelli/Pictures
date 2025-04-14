@@ -2,7 +2,7 @@
 <main id="main" class="main">
 
   <div class="pagetitle">
-    <h1>{{this.nome}} ( {{foto|length}} )  </h1>
+    <h1>{{this.nome}} ( {{foto|length}} ) </h1>
     <p class="text-center">{% if this.descrizione %} {{this.descrizione}} {% endif %}</p>
     
     <div class="row align-right">
@@ -47,11 +47,12 @@
         <select class="makeactionfoto form-select form-select-sm" aria-label=".form-select-sm example">
           <option selected>Azione da compiere</option>
           <option value="1">Aggiungi  selezionate anche in altro album </option>
+          <option value="10">Elimina  selezionate da questo album </option>
           <option value="2">Sposta  selezionate in album esistente</option>
           <option value="3">Crea nuovo album per selezionate</option>
-          <option value="4">Geolocalizza selezionate</option>
+          <option value="4">BAH !Geolocalizza selezionate</option>
           <option value="5">Aggiungi Immagini </option>
-          <option value="6">Elimina foto selezionate </option>
+          <option value="6">Elimina definitivamente foto selezionate </option>
           <option value="7">Rileggi data foto selezionate </option>
         </select>
       </div>
@@ -180,12 +181,12 @@
           <div class="card-footer">
             <div class="icon text-end">
               <a href="/download/{{one.id}}"><i class="bi bi-download"></i></a> &nbsp;
-              <i class="bi bi-trash" onclick="deleteThis({{one.id}})"></i> &nbsp;
+              <i class="bi bi-trash" onclick="deleteThisVideo({{one.id}})"></i> &nbsp;
+              <!--
               <a href="/albums/modify/{{one.id}}" target="_blank"><i class="bi bi-pencil" data-img_id="{{one.id}}"
                   data-lat="{{one.lat}}" data-lon="{{one.lon}}"
                   data-img="{% get_settings_value 'MEDIA_URL' %}{{ one.image.image.name }}"></i>&nbsp; </a>
-              <!--
-                <a href="#" onclick="showModal(this)" data-img_id="{{one.id}}" data-album_id="{{this.id}}"><i class="bi bi-eye"></i> </a>&nbsp; 
+              
                 -->
               <i class="bi bi-plus-circle" onclick="add2album({{one.id}})"></i>&nbsp;
               <a href="#"><i class="bi bi-pin-map" onclick="add2map(this,'mapdiv')" data-lat="{{one.lat}}"
@@ -264,6 +265,117 @@
 </div><!-- End Modal Dialog Scrollable-->
 
 <!-- END MODAL -->
+
+<!-- MODAL Assegnazione ANCHE altro album-->
+<div class="modal fade" id="modalAssegnaAncheAltroAlbum" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assegna ad un Album</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="assegnaAncheAltroAlbum" method="POST" class="  "  enctype="multipart/form-data">{% csrf_token %}
+          <div class="row">
+    
+            <div class="col-12 col-md-12 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="video-title card-title">Associa Immagini anche a questo album</h5>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body ">
+                             <div>
+                              <select class="form-select" aria-label="Default select example">
+                                <option selected="">Open this select menu</option>
+                                {% for item in albums %}
+                                <option value="{{item.id}}">{{item.nome}}</option>
+                                {% endfor %}
+                              </select>
+                             </div>
+                             <div class="errorMsg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             
+            <div class="col-12 d-flex justify-content-end">
+                   <button type="button" class="btn btn-secondary  me-1 mb-1" data-bs-dismiss="modal">Close</button>
+
+                  <button type="submit" class="btn btn-primary me-1 mb-1">Assegna</button>
+                                        <!-- 
+                                            <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                        -->
+            </div>
+          </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <!--
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+        -->
+      </div>
+    </div>
+  </div>
+</div><!-- End Modal Dialog Scrollable-->
+
+<!-- MODAL ELIMINA   solo da album-->
+<div class="modal fade" id="modalEliminaDaAlbum" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Elimina da questo Album</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="EliminaDaAlbum" method="POST" class="  "  enctype="multipart/form-data">{% csrf_token %}
+          <div class="row">
+    
+            <div class="col-12 col-md-12 ">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="video-title card-title">Elimina   da questo album</h5>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body ">
+                             <div>
+                              <input name="album" type="hidden" value="{{this.id}}">
+                              <select class="form-select" aria-label="Default select example">
+                                <option selected="">Open this select menu</option>
+                                {% for item in albums %}
+                                <option value="{{item.id}}">{{item.nome}}</option>
+                                {% endfor %}
+                              </select>
+                             </div>
+                             <div class="errorMsg"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             
+            <div class="col-12 d-flex justify-content-end">
+                   <button type="button" class="btn btn-secondary  me-1 mb-1" data-bs-dismiss="modal">Close</button>
+
+                  <button type="submit" class="btn btn-primary me-1 mb-1">Assegna</button>
+                                        <!-- 
+                                            <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                        -->
+            </div>
+          </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <!--
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+        -->
+      </div>
+    </div>
+  </div>
+</div><!-- End Modal Dialog Scrollable-->
+
+
 
 <!-- MODAL Assegnazione altro album-->
 <div class="modal fade" id="modalAssegnaAltroAlbum" tabindex="-1">
