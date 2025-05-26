@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.views  import View
+from django.conf import settings
+
 from home.models import Image2Album,Immagine
 from exif import Image
 import os
@@ -19,7 +21,7 @@ class CheckMetadata(View):
      
     def get(self,request,img_id):
           img = Immagine.objects.get(pk=img_id)
-          path=os.path.join('/srv/media',img.image.name)
+          path=os.path.join(settings.MEDIA_ROOT,img.image.name)
           met = MyExifTool(path)
           exiftool = met.read_image_metadata()
           with open(path, 'rb') as image_file:

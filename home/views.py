@@ -164,7 +164,18 @@ class PrimaPagina(View):
 
         return render(request,self.template_name, context)
 
+class Dashboard(View):
+        template_name = "home/dashboard.html"
 
+        def get(self,request):
+            
+            
+            foto = Image2Album.objects.filter(album=31).order_by('image__data')
+            #sortedfoto = foto.image.order_by('-data')
+            thisalbum = Album.objects.get(pk=1)
+            #albums = request.get('/rest/list')
+            context={'foto':foto,'this':thisalbum}
+            return render(request,self.template_name, context)
 
 
 class Index(View):
